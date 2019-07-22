@@ -8,35 +8,30 @@ colorstrology <- function(i,j){
     read_html()
   date <- page %>% html_node('table table td') %>% html_text() %>% 
     gsub('^\\s+|\\s+$|[\r\n\t]', '', .)
-  pantone <- page %>% html_nodes('tr') %>%  `[[`(4) %>% html_text() %>%  
+  pantone <- page %>% html_nodes('tr') %>% `[[`(4) %>% html_text() %>%  
     stringr::str_extract("PANTONE\\s\\d\\d.*\\d\\d") 
+  hex <- page %>% html_nodes("td#tdBg") %>% 
+    html_attr("bgcolor")
   meta <- page %>% html_nodes('#tdBg span') %>% html_text()
   description <- page %>% html_node('tr:nth-of-type(2) div') %>% html_text() %>% 
     gsub('^\\s+|\\s+$|[\r\n\t]', '', .)
-  df <- data.frame(date, pantone, meta, description)
-}
-
-
-# get just pantone ID
-#  (PANTONE)\s\d\d.*\d\d
-
- 
+  df <- data.frame(date, pantone, hex, meta, description)
+  }
 
 
 
-test <- colorstrology(1, 10)
+
 
 months <- c(1:12)
 days <- c(1:31)
 
-df <- data.frame(date, pantone, meta, description)
+df <- data.frame(date, pantone, hex, meta, description)
 for (m in months){
   for (d in days){
     temp <- colorstrology(m,d)
     df <- rbind(temp, df)
-}
-}
-
+  }
+  }
 
 ## mutate color variable
 df <- df %>% 
@@ -44,7 +39,6 @@ df <- df %>%
   mutate(color = first(meta)) 
 
 ## filter out test
-
 df <- df %>% filter(description!="test")
 
 

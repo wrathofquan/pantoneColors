@@ -1,22 +1,30 @@
 library(rvest)
 
 colorstrology <- function(i,j){
-  
   body <- list('month' = i,'day' = j)
   url <- 'https://www.pantone.com/pages/iphone/iphone_colorstrology_results.aspx'
   page <- html_session(url) %>%
     rvest:::request_POST(url, body = body, encode = "form") %>%
     read_html()
-  
   date <- page %>% html_node('table table td') %>% html_text() %>% 
     gsub('^\\s+|\\s+$|[\r\n\t]', '', .)
+  pantone <- page %>% html_nodes('tr') %>%  `[[`(4) %>% html_text() %>%  
+    stringr::str_extract("PANTONE\\s\\d\\d.*\\d\\d") 
+  meta <- page %>% html_nodes('#tdBg span') %>% html_text()
   description <- page %>% html_node('tr:nth-of-type(2) div') %>% html_text() %>% 
     gsub('^\\s+|\\s+$|[\r\n\t]', '', .)
-  meta <- page %>% html_nodes('#tdBg span') %>% html_text()
-  
-  df <- data.frame(date, description, meta)
+  df <- data.frame(date, pantone, meta, description)
 }
 
+
+# get just pantone ID
+#  (PANTONE)\s\d\d.*\d\d
+
+ 
+
+
+
+test <- colorstrology(1, 10)
 
 months <- c(1:12)
 days <- c(1:31)
@@ -28,6 +36,16 @@ for (m in months){
     df <- rbind(temp, df)
 }
 }
+
+
+## mutate color variable
+df <- df %>% 
+  group_by(date) %>% 
+  mutate(color = first(meta)) 
+
+
+
+
 
 
 # 

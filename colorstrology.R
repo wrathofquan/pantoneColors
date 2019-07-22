@@ -29,7 +29,7 @@ test <- colorstrology(1, 10)
 months <- c(1:12)
 days <- c(1:31)
 
-df <- data.frame(date, description, meta)
+df <- data.frame(date, pantone, meta, description)
 for (m in months){
   for (d in days){
     temp <- colorstrology(m,d)
@@ -43,7 +43,9 @@ df <- df %>%
   group_by(date) %>% 
   mutate(color = first(meta)) 
 
+## filter out test
 
+df <- df %>% filter(description!="test")
 
 
 

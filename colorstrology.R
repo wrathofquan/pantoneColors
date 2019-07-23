@@ -25,13 +25,13 @@ colorstrology <- function(i,j){
 months <- c(1:12)
 days <- c(1:31)
 
-df <- data.frame(date, pantone, hex, meta, description)
+df <- data.frame()
 for (m in months){
   for (d in days){
     temp <- colorstrology(m,d)
     df <- rbind(temp, df)
   }
-  }
+  } 
 
 ## mutate color variable
 df <- df %>% 
@@ -41,7 +41,11 @@ df <- df %>%
 ## filter out test
 df <- df %>% filter(description!="test")
 
+## remove excess rows with color value
 
+df <- df %>% filter(meta != color)
+
+write_csv(df, color.csv)
 
 
 # 
